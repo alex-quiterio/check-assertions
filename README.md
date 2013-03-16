@@ -1,4 +1,4 @@
-** Check Assertions on Java Classes
+# Check Assertions on Java Classes
 
 Although Java is a strongly typed language, its type system is not sufficiently
 powerful to be usable in some interesting situations.
@@ -33,7 +33,7 @@ cally verify those constraints whenever a field is initialized, used, or updated
 or whenever a method is called.
 
 
-** Goals with Check Assertions Project
+## Goals with Check Assertions Project
 
 Implement, in Java, a set of extensions that can be applicable to the above
 mentioned scenarios. You must implement, at the very least:
@@ -50,7 +50,7 @@ ering the automatic initialization done by the language).
 must be enforced immediately before the method returns.
 
 
-** An simple example to define assertions in class attributes:**
+**An simple example to define assertions in class attributes:**
 
 ```java
 public class Test {
