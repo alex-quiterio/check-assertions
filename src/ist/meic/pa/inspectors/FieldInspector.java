@@ -8,7 +8,6 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
-import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
@@ -24,6 +23,8 @@ public class FieldInspector implements Inspector {
 			"public void assertOnWrite_%s() throws RuntimeException {" +  
 				"if(!(%s)) {" +
 					"throw new RuntimeException(\"%s\");" +
+				"} else {" +
+					"FieldMapper.initializationComplete((Object)this, %s);" +
 				"}" + 
 			"}";
 	final String callWriteAssert =
@@ -33,9 +34,14 @@ public class FieldInspector implements Inspector {
 			"}";
 	final String callReadAssert = 
 			"{" +
-				"$_ = ($r) $0;" +
+				"if(FieldMapper.fieldInitialized((Object)this, %s) {" +
+					"$_ = ($r) $0;" +
+				"else {" +
+					"throw new RuntimeException(\"%s\");" +
+				"}" +
 			"}";
 	final String callAssert = "assertOnWrite_%s();";
+	final String initializeField = "FieldMapper.addField((Object) this, %s)";
 	final String errorMessage = "The assertion %s is false";
 	
 	private boolean initialized = false;
@@ -50,7 +56,7 @@ public class FieldInspector implements Inspector {
 			try {
 				ctMethod.instrument(strategy(ctClass));
 			} catch (CannotCompileException e) {
-				System.out.println("Something wrong" + e.getMessage());
+				System.out.println("Something wrong: " + e.getMessage());
 			}
 		}
 	}
@@ -89,11 +95,11 @@ public class FieldInspector implements Inspector {
 		};
 	}
 	
-	
 	private void injectGuardMethods(CtClass ctClass) {
 		Assertion assertion;
 		String expression, fieldName, error;
 		String insanityCheck = "{";
+		String fieldInitialization = "{";
 		
 		for(CtField field : ctClass.getFields()) {
 			if (field.hasAnnotation(Assertion.class)) {
@@ -103,10 +109,12 @@ public class FieldInspector implements Inspector {
 					fieldName = field.getName();
 					error = String.format(errorMessage, expression);
 					insanityCheck += String.format(callAssert, fieldName);
+					fieldInitialization += String.format(initializeField, fieldName);
 					CtMethod m = CtNewMethod.make(String.format(runtimeMethod, 
 							fieldName,
 							expression,
-							error), ctClass);
+							error,
+							fieldName), ctClass);
 					ctClass.addMethod(m);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
@@ -118,9 +126,11 @@ public class FieldInspector implements Inspector {
 		}
 		
 		insanityCheck += "}";
+		fieldInitialization += "}";
 		
 		for (CtConstructor constructor : ctClass.getConstructors()) {
 			try {
+				constructor.insertBefore(fieldInitialization);
 				constructor.insertAfter(insanityCheck);
 			} catch (CannotCompileException e) {
 				e.printStackTrace();

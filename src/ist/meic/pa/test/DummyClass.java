@@ -22,7 +22,6 @@ public class DummyClass {
 		baz=3;
 		bar+=2;
 		quux="foo";
-		bar++;
 	}
 
 	

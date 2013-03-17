@@ -13,6 +13,7 @@ public class MethodInspector implements Inspector {
 	@Override
 	public void inspect(CtClass ctClass) {
 		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
+			ctMethod.getClass();
 		}
 	}
 	

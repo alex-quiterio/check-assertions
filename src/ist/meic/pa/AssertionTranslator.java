@@ -23,7 +23,7 @@ public class AssertionTranslator implements Translator {
 	@Override
 	public void start(ClassPool pool) 
 			throws NotFoundException, CannotCompileException {
-		
+		pool.importPackage("ist.meic.pa.FieldMapper");
 	}
 	
 	/**
