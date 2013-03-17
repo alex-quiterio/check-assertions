@@ -16,10 +16,15 @@ public class DummyClass {
 	@Assertion("quux.length()>1")
 	String quux;
 
-	
-	public DummyClass() {
-		
+	public DummyClass()
+	{
+		bar=2;
+		baz=3;
+		bar+=2;
+		quux="foo";
+		bar++;
 	}
+
 	
 	@Assertion("($1>=0) && ($_>$1)")
 	public int fooBar(int x) {
@@ -28,10 +33,5 @@ public class DummyClass {
 
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass();
-		dum.bar=2;
-		dum.baz=3;
-		dum.bar+=2;
-		dum.quux="foo";
-		dum.bar++;
 	}
 }

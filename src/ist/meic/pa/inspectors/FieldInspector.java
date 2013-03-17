@@ -3,10 +3,12 @@ package ist.meic.pa.inspectors;
 import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
@@ -19,16 +21,21 @@ import javassist.expr.FieldAccess;
 public class FieldInspector implements Inspector {
 	
 	final String runtimeMethod =
-			"public void assert_%s() throws RuntimeException {" +  
+			"public void assertOnWrite_%s() throws RuntimeException {" +  
 				"if(!(%s)) {" +
 					"throw new RuntimeException(\"%s\");" +
 				"}" + 
 			"}";
-	final String defaultTemplate =
-			"{" + 
+	final String callWriteAssert =
+			"{" +
 				"$0.%s = $1;" + 
-				"$0.assert_%s();" +
+				"$0.assertOnWrite_%s();" +
 			"}";
+	final String callReadAssert = 
+			"{" +
+				"$_ = ($r) $0;" +
+			"}";
+	final String callAssert = "assertOnWrite_%s();";
 	final String errorMessage = "The assertion %s is false";
 	
 	private boolean initialized = false;
@@ -56,17 +63,21 @@ public class FieldInspector implements Inspector {
 	/**
 	 * 
 	 * @return a strategy defined in order to inject assertions in every field 
-	 * attribute of classes
+	 * with annotation @Assertion
 	 */
 	private ExprEditor strategy(final CtClass ctClass) {
 		return new ExprEditor() {
+			// field access purpose
 			public void edit(FieldAccess fa) {
-				String fieldName;
+				String fieldName = fa.getFieldName();
 				try {
 					if (fa.isWriter()
 							&& fa.getField().hasAnnotation(Assertion.class)) {
 							fieldName = fa.getFieldName();
-							fa.replace(String.format(defaultTemplate, fieldName, fieldName));
+							fa.replace(String.format(callWriteAssert, fieldName, fieldName));
+					} else if (fa.isReader() 
+							&& fa.getField().hasAnnotation(Assertion.class)) {
+							//fa.replace(String.format(callReadAssert, fieldName, fieldName));
 					}
 				} catch (NotFoundException e) {
 					e.printStackTrace();
@@ -74,6 +85,7 @@ public class FieldInspector implements Inspector {
 					e.printStackTrace();
 				}
 			}
+			
 		};
 	}
 	
@@ -81,6 +93,7 @@ public class FieldInspector implements Inspector {
 	private void injectGuardMethods(CtClass ctClass) {
 		Assertion assertion;
 		String expression, fieldName, error;
+		String insanityCheck = "{";
 		
 		for(CtField field : ctClass.getFields()) {
 			if (field.hasAnnotation(Assertion.class)) {
@@ -89,6 +102,7 @@ public class FieldInspector implements Inspector {
 					expression = assertion.value();
 					fieldName = field.getName();
 					error = String.format(errorMessage, expression);
+					insanityCheck += String.format(callAssert, fieldName);
 					CtMethod m = CtNewMethod.make(String.format(runtimeMethod, 
 							fieldName,
 							expression,
@@ -102,7 +116,18 @@ public class FieldInspector implements Inspector {
 				
 			}
 		}
+		
+		insanityCheck += "}";
+		
+		for (CtConstructor constructor : ctClass.getConstructors()) {
+			try {
+				constructor.insertAfter(insanityCheck);
+			} catch (CannotCompileException e) {
+				e.printStackTrace();
+			}
+		}
 	}
+
 	
 	
 }
