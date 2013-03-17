@@ -15,13 +15,14 @@
   <property name="jar.rel-dir"      value="jar" />
   <property name="build.rel-dir"    value="build/${application.name}" />
   <property name="generated-src.build.rel-dir" value="${build.rel-dir}/src" />
-  <property name="template-case"    value="ist.dummy.DummyClass" />
+  <property name="template-case"    value="ist.meic.pa.test.DummyClass" />
   <property name="classes.build.dir" value="${build.rel-dir}/war/classes"/>
   
   <path id="project.classpath">
-    <pathelement location="${classes.build.dir}" />
+    <pathelement location="build/classes" />
     <fileset dir="${lib.rel-dir}">
-        <include name="**/*.jar" />
+        <include name="javassist.jar" />
+        <include name=" junit-4.10.jar" />
     </fileset>
   </path>
     
@@ -51,8 +52,9 @@
   <target name="generate-jar" depends="compile">
     <mkdir dir="build/jar"/>
       <jar destfile="build/jar/checkassertions.jar" basedir="build/classes">
+        <zipgroupfileset dir="lib/" includes="*.jar"/>
         <manifest>
-          <attribute name="Main-Class" value="oata.HelloWorld"/>
+          <attribute name="Main-Class" value="ist.meic.pa.${application.name}"/>
         </manifest>
     </jar>
   </target>
@@ -65,7 +67,7 @@
     </junit>
   </target>
 
-  <target name="run-template-case" depends="compile">
+  <target name="run-template-case" depends="generate-jar">
     <java jar="build/jar/checkassertions.jar" fork="true">
         <arg value="${template-case}"/>
     </java>

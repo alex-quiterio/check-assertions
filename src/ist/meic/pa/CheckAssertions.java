@@ -10,6 +10,7 @@ import javassist.Translator;
 
 public class CheckAssertions {
 
+	
   private Loader loader;
 
   public CheckAssertions(Translator translator) throws Exception {
@@ -30,7 +31,7 @@ public class CheckAssertions {
     CheckAssertions checkAssertions = new CheckAssertions(translator);
     String[] restArgs = new String[args.length - 1];
     System.arraycopy(args, 1, restArgs, 0, restArgs.length);
-    checkAssertions.run("ist.ap.test.DummyClass", restArgs);
+    checkAssertions.run(args[0], restArgs);
   }
 
 }
