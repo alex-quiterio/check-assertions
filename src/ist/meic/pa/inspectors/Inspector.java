@@ -10,4 +10,6 @@ public interface Inspector {
 	 * @param ctClass - the target class of evaluation
 	 */
 	public abstract void inspect(CtClass ctClass);
+	
+	public abstract void inspectorInitialized();
 }

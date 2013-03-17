@@ -13,7 +13,10 @@ public class MethodInspector implements Inspector {
 	@Override
 	public void inspect(CtClass ctClass) {
 		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
-			System.out.println(ctMethod.getName());
 		}
+	}
+	
+	public void inspectorInitialized() {
+		
 	}
 }
