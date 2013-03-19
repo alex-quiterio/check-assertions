@@ -2,10 +2,12 @@ package ist.meic.pa;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public  class FieldMapper {
 	
 	private static HashMap<Object, ArrayList<String>> fieldMapper = new HashMap<Object, ArrayList<String>>();
+	public  static Stack<Object[]> stack  = new Stack<Object[]>();
 	
 	public static void initializationComplete(Object object, String field) {
 		ArrayList<String> fieldList;

@@ -32,5 +32,6 @@ public class DummyClass {
 
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass();
+		dum.fooBar(1);
 	}
 }

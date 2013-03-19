@@ -25,7 +25,7 @@ public class CheckAssertions {
   public static void main(String [] args) throws Throwable {
 
     // Define the strategies to make the assertion check
-    Inspector [] inspectors = { new FieldInspector(), new MethodInspector() };
+    Inspector [] inspectors = { new MethodInspector() };
     
     Translator translator = new AssertionTranslator(inspectors);
     CheckAssertions checkAssertions = new CheckAssertions(translator);
