@@ -6,7 +6,15 @@ import java.util.Stack;
 
 public  class FieldMapper {
 	
-	private static HashMap<Object, ArrayList<String>> fieldMapper = new HashMap<Object, ArrayList<String>>();
+	private static HashMap<Object, ArrayList<String>> fieldMapper = 
+			new HashMap<Object, ArrayList<String>>();
+	
+	/**
+	 * stack Object is used to scope the method instance when a
+	 * call is made, i.e. to keep the arguments list reachable from
+	 * the last part of method before we call the method (see Method Assertion
+	 * Class) we save it on a stack for future inspection
+	 */
 	public  static Stack<Object[]> stack  = new Stack<Object[]>();
 	
 	public static void initializationComplete(Object object, String field) {

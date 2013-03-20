@@ -22,7 +22,7 @@
     <pathelement location="build/classes" />
     <fileset dir="${lib.rel-dir}">
         <include name="javassist.jar" />
-        <include name=" junit-4.10.jar" />
+        <include name="junit-4.10.jar" />
     </fileset>
   </path>
     
@@ -48,11 +48,25 @@
     </jar>
   </target>
   
-  <target name="test-assertions" depends="" description="Run NoHandler Test case">
+  <target name="test-assertions" depends="" description="Run Test cases">
     <junit>
         <classpath refid="project.classpath" />
         <formatter type="brief" usefile="false" />
+        <test name="ist.meic.test.FieldAssertionTestCase" />
     </junit>
+  </target>
+  
+  <target name="compile-tests" depends="generate-jar" 
+        description="Compile the tests">
+        <javac destdir="build/classes/" 
+           debug="true" debuglevel="lines,vars,source"  
+           optimize="true" deprecation="true" verbose="false" 
+           includeantruntime="false" encoding="${javac.encoding}">
+        <classpath refid="project.classpath" />
+        <src>
+            <pathelement path="src/ist/meic/test" />
+        </src>
+        </javac>
   </target>
 
   <target name="run-template-case" depends="generate-jar">
