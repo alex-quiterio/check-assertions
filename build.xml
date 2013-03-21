@@ -48,11 +48,12 @@
     </jar>
   </target>
   
-  <target name="test-assertions" depends="" description="Run Test cases">
+  <target name="test-assertions" depends="compile-tests" description="Run Test cases">
     <junit>
         <classpath refid="project.classpath" />
         <formatter type="brief" usefile="false" />
         <test name="ist.meic.test.FieldAssertionTestCase" />
+        <test name="ist.meic.test.FieldMapperTestCase" />
     </junit>
   </target>
   

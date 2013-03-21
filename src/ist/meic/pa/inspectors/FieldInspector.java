@@ -24,7 +24,13 @@ public class FieldInspector implements Inspector {
 				"if(!(%s)) {" +
 					"throw new RuntimeException(\"%s\");" +
 				"} else {" +
-					"FieldMapper.initializationComplete((Object)this, %s);" +
+					"FieldMapper.initializationComplete((Object)this, \"%s\");" +
+				"}" + 
+			"}";
+	final String constructorMethod =
+			"public void assertOnBuild_%s() throws RuntimeException {" +  
+				"if(!(%s)) {" +
+					"throw new RuntimeException(\"%s\");" +
 				"}" + 
 			"}";
 	final String callWriteAssert =
@@ -34,15 +40,16 @@ public class FieldInspector implements Inspector {
 			"}";
 	final String callReadAssert = 
 			"{" +
-				"if(FieldMapper.fieldInitialized((Object)this, %s) {" +
+				"if(FieldMapper.fieldInitialized((Object)this, \"%s\")) {" +
 					"$_ = ($r) $0;" +
-				"else {" +
+				"} else {" +
 					"throw new RuntimeException(\"%s\");" +
 				"}" +
 			"}";
-	final String callAssert = "assertOnWrite_%s();";
-	final String initializeField = "FieldMapper.addField((Object) this, %s)";
+	final String callAssert = "assertOnBuild_%s();";
+	final String initializeField = "FieldMapper.addField((Object) this, \"%s\");";
 	final String errorMessage = "The assertion %s is false";
+	final String errorIMessage = "%s is not initialized";
 	
 	private boolean initialized = false;
 	
@@ -83,7 +90,8 @@ public class FieldInspector implements Inspector {
 							fa.replace(String.format(callWriteAssert, fieldName, fieldName));
 					} else if (fa.isReader() 
 							&& fa.getField().hasAnnotation(Assertion.class)) {
-							//fa.replace(String.format(callReadAssert, fieldName, fieldName));
+							fa.replace(String.format(callReadAssert, fieldName, 
+									String.format(errorIMessage, fieldName)));
 					}
 				} catch (NotFoundException e) {
 					e.printStackTrace();
@@ -115,7 +123,12 @@ public class FieldInspector implements Inspector {
 							expression,
 							error,
 							fieldName), ctClass);
+					CtMethod m1 = CtNewMethod.make(String.format(constructorMethod, 
+							fieldName,
+							expression,
+							error), ctClass);
 					ctClass.addMethod(m);
+					ctClass.addMethod(m1);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				} catch (CannotCompileException e) {
@@ -130,8 +143,8 @@ public class FieldInspector implements Inspector {
 		
 		for (CtConstructor constructor : ctClass.getConstructors()) {
 			try {
-				constructor.insertBefore(fieldInitialization);
-				constructor.insertAfter(insanityCheck);
+				constructor.insertAfter(fieldInitialization);
+				//constructor.insertAfter(insanityCheck);
 			} catch (CannotCompileException e) {
 				e.printStackTrace();
 			}

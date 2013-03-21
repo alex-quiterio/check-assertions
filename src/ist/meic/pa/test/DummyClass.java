@@ -18,10 +18,7 @@ public class DummyClass {
 
 	public DummyClass()
 	{
-		bar=2;
-		baz=3;
-		bar+=2;
-		quux="foo";
+		
 	}
 
 	
@@ -33,5 +30,6 @@ public class DummyClass {
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass();
 		dum.fooBar(1);
+		dum.bar++;
 	}
 }

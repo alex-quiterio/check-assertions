@@ -17,17 +17,26 @@ public  class FieldMapper {
 	 */
 	public  static Stack<Object[]> stack  = new Stack<Object[]>();
 	
-	public static void initializationComplete(Object object, String field) {
+	public static boolean initializationComplete(Object object, String field) {
 		ArrayList<String> fieldList;
 		fieldList = (ArrayList<String>) fieldMapper.get(object);
 		if (fieldList != null) {
 			fieldList.remove(field);
+			fieldMapper.remove(object);
+			fieldMapper.put(object, fieldList);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	public static boolean fieldInitialized(Object object, String field) {
 		ArrayList<String> fieldList = (ArrayList<String>) fieldMapper.get(object);
-		return (fieldList == null) ? null : fieldList.contains(field);
+		if (fieldList == null) {
+			throw new RuntimeException("NULL FIELD");
+		} else {
+			return !(fieldList.contains(field));
+		}
 	}
 	
 	public static void addField(Object object, String field) {
