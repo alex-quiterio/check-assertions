@@ -2,6 +2,7 @@ package ist.meic.pa.inspectors;
 
 import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -20,34 +21,26 @@ import javassist.expr.FieldAccess;
 public class FieldInspector implements Inspector {
 	
 	final String runtimeMethod =
-			"public void assertOnWrite_%s() throws RuntimeException {" +  
+			"public void assertOnWrite_%s() throws RuntimeException {" +
 				"if(!(%s)) {" +
 					"throw new RuntimeException(\"%s\");" +
-				"} else {" +
-					"FieldMapper.initializationComplete((Object)this, \"%s\");" +
-				"}" + 
-			"}";
-	final String constructorMethod =
-			"public void assertOnBuild_%s() throws RuntimeException {" +  
-				"if(!(%s)) {" +
-					"throw new RuntimeException(\"%s\");" +
-				"}" + 
+				"}" +  
 			"}";
 	final String callWriteAssert =
 			"{" +
 				"$0.%s = $1;" + 
+				"FieldMapper.addField((Object)$0, \"%s\");" +
 				"$0.assertOnWrite_%s();" +
 			"}";
 	final String callReadAssert = 
 			"{" +
-				"if(FieldMapper.fieldInitialized((Object)this, \"%s\")) {" +
-					"$_ = ($r) $0;" +
+				"if(FieldMapper.fieldInitialized((Object)$0, \"%s\")) {" +
+					"$_ = ($r) $0.%s;" +
 				"} else {" +
 					"throw new RuntimeException(\"%s\");" +
 				"}" +
 			"}";
-	final String callAssert = "assertOnBuild_%s();";
-	final String initializeField = "FieldMapper.addField((Object) this, \"%s\");";
+
 	final String errorMessage = "The assertion %s is false";
 	final String errorIMessage = "%s is not initialized";
 	
@@ -57,20 +50,16 @@ public class FieldInspector implements Inspector {
 	public void inspect(CtClass ctClass) {
 		if (this.initialized == false) {
 			injectGuardMethods(ctClass);
-			this.inspectorInitialized();
+			this.initialized = true;
 		}
-		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
+		
+		for (CtBehavior ctBehavior : ctClass.getDeclaredBehaviors()) {
 			try {
-				ctMethod.instrument(strategy(ctClass));
+				ctBehavior.instrument(strategy(ctClass));
 			} catch (CannotCompileException e) {
 				System.out.println("Something wrong: " + e.getMessage());
 			}
 		}
-	}
-	
-	@Override
-	public void inspectorInitialized() {
-		this.initialized = true;
 	}
 	
 	/**
@@ -87,10 +76,12 @@ public class FieldInspector implements Inspector {
 					if (fa.isWriter()
 							&& fa.getField().hasAnnotation(Assertion.class)) {
 							fieldName = fa.getFieldName();
-							fa.replace(String.format(callWriteAssert, fieldName, fieldName));
+							fa.replace(String.format(callWriteAssert, 
+									fieldName, fieldName,fieldName));
 					} else if (fa.isReader() 
 							&& fa.getField().hasAnnotation(Assertion.class)) {
-							fa.replace(String.format(callReadAssert, fieldName, 
+							fa.replace(String.format(callReadAssert, fieldName,
+									fieldName,
 									String.format(errorIMessage, fieldName)));
 					}
 				} catch (NotFoundException e) {
@@ -106,8 +97,6 @@ public class FieldInspector implements Inspector {
 	private void injectGuardMethods(CtClass ctClass) {
 		Assertion assertion;
 		String expression, fieldName, error;
-		String insanityCheck = "{";
-		String fieldInitialization = "{";
 		
 		for(CtField field : ctClass.getFields()) {
 			if (field.hasAnnotation(Assertion.class)) {
@@ -116,37 +105,17 @@ public class FieldInspector implements Inspector {
 					expression = assertion.value();
 					fieldName = field.getName();
 					error = String.format(errorMessage, expression);
-					insanityCheck += String.format(callAssert, fieldName);
-					fieldInitialization += String.format(initializeField, fieldName);
 					CtMethod m = CtNewMethod.make(String.format(runtimeMethod, 
-							fieldName,
-							expression,
-							error,
-							fieldName), ctClass);
-					CtMethod m1 = CtNewMethod.make(String.format(constructorMethod, 
 							fieldName,
 							expression,
 							error), ctClass);
 					ctClass.addMethod(m);
-					ctClass.addMethod(m1);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				} catch (CannotCompileException e) {
 					e.printStackTrace();
 				}
 				
-			}
-		}
-		
-		insanityCheck += "}";
-		fieldInitialization += "}";
-		
-		for (CtConstructor constructor : ctClass.getConstructors()) {
-			try {
-				constructor.insertAfter(fieldInitialization);
-				//constructor.insertAfter(insanityCheck);
-			} catch (CannotCompileException e) {
-				e.printStackTrace();
 			}
 		}
 	}

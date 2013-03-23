@@ -17,25 +17,13 @@ public  class FieldMapper {
 	 */
 	public  static Stack<Object[]> stack  = new Stack<Object[]>();
 	
-	public static boolean initializationComplete(Object object, String field) {
-		ArrayList<String> fieldList;
-		fieldList = (ArrayList<String>) fieldMapper.get(object);
-		if (fieldList != null) {
-			fieldList.remove(field);
-			fieldMapper.remove(object);
-			fieldMapper.put(object, fieldList);
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
 	public static boolean fieldInitialized(Object object, String field) {
 		ArrayList<String> fieldList = (ArrayList<String>) fieldMapper.get(object);
 		if (fieldList == null) {
 			throw new RuntimeException("NULL FIELD");
 		} else {
-			return !(fieldList.contains(field));
+			return fieldList.contains(field);
 		}
 	}
 	
@@ -45,6 +33,9 @@ public  class FieldMapper {
 		if (fieldList == null) {
 			fieldList = new ArrayList<String>();
 			fieldMapper.put(object, fieldList);
+		}
+		if (fieldList.contains(field)) {
+			return;
 		}
 		fieldList.add(field);
 	}

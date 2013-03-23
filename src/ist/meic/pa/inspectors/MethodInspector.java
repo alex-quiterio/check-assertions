@@ -49,8 +49,4 @@ public class MethodInspector implements Inspector {
 			}
 		}
 	}
-	
-	public void inspectorInitialized() {
-		
-	}
 }
