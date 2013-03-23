@@ -4,6 +4,7 @@ import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 
 /**
  * Method Inspector implements Inspector Interface in order to arm assertions
@@ -27,26 +28,46 @@ public class MethodInspector implements Inspector {
 	
 	@Override
 	public void inspect(CtClass ctClass) {
-		Assertion assertion;
 		String expression, error; 
 		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
 			try {
 				if (ctMethod.hasAnnotation(Assertion.class)) {
-					assertion = (Assertion) ctMethod.getAnnotation(Assertion.class);
-					expression = assertion.value();
+					expression = getAssertionChain(ctMethod, ctClass);
 					error = String.format(errorMessage, expression);
 					ctMethod.insertBefore(templateBefore);
-					ctMethod.insertAfter(String.format(
-							templateAfter, 
-							expression, 
-							error
+					ctMethod.insertAfter(String.format(templateAfter, 
+						expression, 
+						error
 					));
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			} catch (CannotCompileException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private String getAssertionChain(CtMethod m, CtClass c) {
+		Assertion an;
+		String OPERAND = "&&";
+		String assertionChain = "";
+		String template = "(%s) %s ";
+		CtMethod currentMethod = m;
+		CtClass  currentClass  = c;
+		while (currentClass != null) {
+			try {
+				currentMethod = currentClass.getDeclaredMethod(currentMethod.getName(), 
+						currentMethod.getParameterTypes());
+				an = (Assertion) currentMethod.getAnnotation(Assertion.class);
+				assertionChain += String.format(template, an.value(), OPERAND);
+				currentClass = currentClass.getSuperclass();
+			} catch (NotFoundException e) {
+				currentClass = null;
+				continue;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				return "true";
+			}
+		}
+		return assertionChain  + "true";
 	}
 }

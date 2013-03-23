@@ -2,7 +2,15 @@ package ist.meic.pa.test;
 
 import ist.meic.pa.annotations.Assertion;
 
-public class DummyClass {
+class Base {
+	
+	@Assertion("($1>=0) && ($_>$1)")
+	public int fooBar(int x) {
+		return ++x;
+	}
+}
+
+public class DummyClass extends Base {
 	
 	@Assertion("foo>0")
 	int foo=1;
@@ -22,14 +30,16 @@ public class DummyClass {
 		
 	}
 
-	@Assertion("($1>=0) && ($_>$1)")
+	@Override
+	@Assertion("($1%2==0) && ($_%2==1)")
 	public int fooBar(int x) {
-		return ++x;
+		return x+1;
 	}
+
 
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass();
-		dum.fooBar(1);
+		dum.fooBar(2);
 		dum.bar = 2;
 	}
 }
