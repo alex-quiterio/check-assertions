@@ -21,7 +21,7 @@ public  class FieldMapper {
 	public static boolean fieldInitialized(Object object, String field) {
 		ArrayList<String> fieldList = (ArrayList<String>) fieldMapper.get(object);
 		if (fieldList == null) {
-			throw new RuntimeException("NULL FIELD");
+			return false;
 		} else {
 			return fieldList.contains(field);
 		}

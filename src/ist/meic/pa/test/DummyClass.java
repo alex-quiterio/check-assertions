@@ -20,15 +20,19 @@ public class DummyClass extends Base {
 	
 	@Assertion("baz>foo")
 	int baz;
-	
+
 	@Assertion("quux.length()>1")
 	String quux;
 
-	public DummyClass()
+	
 	{
-		this.baz = 2;
-		
+		bar=2;
+		baz=3;
+		bar+=2;
+		quux="foo";
+		bar++;
 	}
+
 
 	@Override
 	@Assertion("($1%2==0) && ($_%2==1)")
@@ -39,7 +43,6 @@ public class DummyClass extends Base {
 
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass();
-		dum.fooBar(2);
-		dum.bar = 2;
+		
 	}
 }

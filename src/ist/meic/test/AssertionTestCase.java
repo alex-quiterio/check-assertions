@@ -1,6 +1,7 @@
 package ist.meic.test;
 
 import javassist.ClassPool;
+import ist.meic.test.example.*;
 import javassist.Loader;
 import javassist.Translator;
 import ist.meic.pa.AssertionTranslator;

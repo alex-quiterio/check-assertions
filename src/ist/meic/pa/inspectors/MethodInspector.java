@@ -41,7 +41,8 @@ public class MethodInspector implements Inspector {
 					));
 				}
 			} catch (CannotCompileException e) {
-				e.printStackTrace();
+				System.err.println("[Method Inspector] Something wrong: " 
+						+ e.getMessage());
 			}
 		}
 	}

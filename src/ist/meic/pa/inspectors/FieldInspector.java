@@ -42,7 +42,7 @@ public class FieldInspector implements Inspector {
 			"}";
 
 	final String errorMessage = "The assertion %s is false";
-	final String errorIMessage = "%s is not initialized";
+	final String errorIMessage = "Error: %s was not initialized";
 	
 	private boolean initialized = false;
 	
@@ -57,7 +57,8 @@ public class FieldInspector implements Inspector {
 			try {
 				ctBehavior.instrument(strategy(ctClass));
 			} catch (CannotCompileException e) {
-				System.out.println("Something wrong: " + e.getMessage());
+				System.err.println("[Field Inspector] Something wrong: " 
+						+ e.getMessage());
 			}
 		}
 	}
