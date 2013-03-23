@@ -24,13 +24,13 @@ public class DummyClass extends Base {
 	@Assertion("quux.length()>1")
 	String quux;
 
-	
+	@Assertion("($1>1) && ($2>$1)")
+	public DummyClass(int a, int b)
 	{
-		bar=2;
-		baz=3;
+		bar=a;
+		baz=b;
 		bar+=2;
 		quux="foo";
-		bar++;
 	}
 
 
@@ -42,7 +42,7 @@ public class DummyClass extends Base {
 
 
 	public static void main(String [] args) {
-		DummyClass dum = new DummyClass();
+		DummyClass dum = new DummyClass(2,1);
 		
 	}
 }

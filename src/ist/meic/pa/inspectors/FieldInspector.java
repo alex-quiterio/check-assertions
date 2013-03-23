@@ -4,7 +4,6 @@ import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
 import javassist.CtClass;
-import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;

@@ -10,7 +10,8 @@ public class FieldAssertionTestCase extends AssertionTestCase {
 	}
 	public void testBasicAssertions() {
 		try {
-			Object klass = this.loadNewInstance("BasicAssertion");
+			this.loadClass("BasicAssertion");
+			BasicAssertion klass = new BasicAssertion();
 			//klass.foo = 2;
 			//assertTrue("foo should be 2",klass.foo == 2);
 			try {
@@ -21,7 +22,8 @@ public class FieldAssertionTestCase extends AssertionTestCase {
 			}
 		} catch (Throwable e) {
 			// Ensure failure to show the error message
-			fail("ASD");
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
 		
 	}

@@ -1,7 +1,6 @@
 package ist.meic.test;
 
 import javassist.ClassPool;
-import ist.meic.test.example.*;
 import javassist.Loader;
 import javassist.Translator;
 import ist.meic.pa.AssertionTranslator;
@@ -17,12 +16,13 @@ public abstract class AssertionTestCase extends TestCase {
 		super(msg);	
 		this.translator = 
 				new AssertionTranslator(new Inspector[] { inspector });
-		this.loader = new Loader(ClassPool.getDefault());
 	}
 	
-	protected Object loadNewInstance(String className) throws Throwable {
+	protected void loadClass(String className) throws Throwable {
 		String klassName = "ist.meic.test.example." + className;
-		Class<?> klass = loader.loadClass(klassName);
-		return klass.newInstance();
+		ClassPool pool = ClassPool.getDefault();
+		pool.insertClassPath("ist.meic.test.example");
+		this.translator.start(pool);
+		this.translator.onLoad(pool, klassName);
 	}
 }

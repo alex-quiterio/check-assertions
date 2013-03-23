@@ -10,13 +10,9 @@
   <property name="java.file.encoding" value="UTF-8" />
   <property file="build.properties"/>
   <!-- Main Directories-->
-  <property name="src.rel-dir"      value="src" />
-  <property name="test.src.rel-dir" value="src" />
-  <property name="jar.rel-dir"      value="jar" />
   <property name="build.rel-dir"    value="build/${application.name}" />
   <property name="generated-src.build.rel-dir" value="${build.rel-dir}/src" />
   <property name="template-case"    value="ist.meic.pa.test.DummyClass" />
-  <property name="classes.build.dir" value="${build.rel-dir}/war/classes"/>
   
   <path id="project.classpath">
     <pathelement location="build/classes" />
@@ -48,7 +44,7 @@
     </jar>
   </target>
   
-  <target name="test-assertions" depends="compile-tests" description="Run Test cases">
+  <target name="test-assertions" depends="compile-tests" description="Run Test cases" >
     <junit>
         <classpath refid="project.classpath" />
         <formatter type="brief" usefile="false" />

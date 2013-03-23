@@ -1,8 +1,9 @@
 package ist.meic.pa;
 
-import ist.meic.pa.inspectors.FieldInspector;
 import ist.meic.pa.inspectors.Inspector;
+import ist.meic.pa.inspectors.FieldInspector;
 import ist.meic.pa.inspectors.MethodInspector;
+import ist.meic.pa.inspectors.ConstructorInspector;
 import javassist.ClassPool;
 import javassist.Loader;
 import javassist.Translator;
@@ -25,7 +26,11 @@ public class CheckAssertions {
   public static void main(String [] args) throws Throwable {
 
     // Define the strategies to make the assertion check
-    Inspector [] inspectors = { new MethodInspector(), new FieldInspector() };
+    Inspector [] inspectors = { 
+    		new MethodInspector(), 
+    		new FieldInspector(),
+    		new ConstructorInspector()
+    };
     
     Translator translator = new AssertionTranslator(inspectors);
     CheckAssertions checkAssertions = new CheckAssertions(translator);
