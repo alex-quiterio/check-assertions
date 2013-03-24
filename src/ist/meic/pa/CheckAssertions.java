@@ -25,7 +25,7 @@ public class CheckAssertions {
 
   public static void main(String [] args) throws Throwable {
 
-    // Define the strategies to make the assertion check
+    // Define the assertion strategies to use
     Inspector [] inspectors = { 
     		new MethodInspector(), 
     		new FieldInspector(),

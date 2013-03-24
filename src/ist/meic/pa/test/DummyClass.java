@@ -42,7 +42,7 @@ public class DummyClass extends Base {
 
 
 	public static void main(String [] args) {
-		DummyClass dum = new DummyClass(2,1);
+		DummyClass dum = new DummyClass(4,5);
 		
 	}
 }
