@@ -1,5 +1,6 @@
 package ist.meic.pa.inspectors;
 
+import javassist.ClassPool;
 import javassist.CtClass;
 
 public interface Inspector {
@@ -9,5 +10,5 @@ public interface Inspector {
 	 * needs to define its strategy for class inspection
 	 * @param ctClass - the target class of evaluation
 	 */
-	public abstract void inspect(CtClass ctClass);
+	public abstract void inspect(ClassPool pool, CtClass ctClass);
 }

@@ -2,6 +2,7 @@ package ist.meic.pa.inspectors;
 
 import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
 
@@ -15,7 +16,7 @@ public class ConstructorInspector implements Inspector {
 			"}";
 	final String error = "The assertion %s is false";	
 	@Override
-	public void inspect(CtClass ctClass) {
+	public void inspect(ClassPool pool, CtClass ctClass) {
 		Assertion assertion;
 		String expression, errorMessage;
 		for (CtConstructor ctCons: ctClass.getDeclaredConstructors()) {

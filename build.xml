@@ -45,12 +45,11 @@
   </target>
   
   <target name="test-assertions" depends="compile-tests" description="Run Test cases" >
-    <junit>
-        <classpath refid="project.classpath" />
-        <formatter type="brief" usefile="false" />
-        <test name="ist.meic.test.FieldAssertionTestCase" />
-        <test name="ist.meic.test.FieldMapperTestCase" />
-    </junit>
+      <java jar="build/jar/checkassertions.jar" fork="true">
+        <arg value="junit"/>
+        <arg value="ist.meic.test.FieldMapperTestCase" />
+        <arg value="ist.meic.test.FieldAssertionTestCase" />
+    </java>
   </target>
   
   <target name="compile-tests" depends="generate-jar" 

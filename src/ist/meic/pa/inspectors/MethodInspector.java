@@ -2,6 +2,7 @@ package ist.meic.pa.inspectors;
 
 import ist.meic.pa.annotations.Assertion;
 import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
@@ -27,7 +28,7 @@ public class MethodInspector implements Inspector {
 	final String errorMessage = "The Assertion %s is false";
 	
 	@Override
-	public void inspect(CtClass ctClass) {
+	public void inspect(ClassPool pool, CtClass ctClass) {
 		String expression, error; 
 		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
 			try {

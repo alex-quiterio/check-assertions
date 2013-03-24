@@ -16,7 +16,9 @@ public class CheckAssertions {
 
   public CheckAssertions(Translator translator) throws Exception {
     this.loader = new Loader();
-    this.loader.addTranslator(ClassPool.getDefault(), translator);
+    ClassPool p = new ClassPool(true);
+    p.appendClassPath("./build/classes/");
+    this.loader.addTranslator(p, translator);
   }
 
   public void run(String className, String [] arguments) throws Throwable {
@@ -36,7 +38,12 @@ public class CheckAssertions {
     CheckAssertions checkAssertions = new CheckAssertions(translator);
     String[] restArgs = new String[args.length - 1];
     System.arraycopy(args, 1, restArgs, 0, restArgs.length);
-    checkAssertions.run(args[0], restArgs);
+    
+    if (args[0].equals("junit")) {
+    	checkAssertions.run("ist.meic.test.JunitRoot", restArgs);
+    } else {
+    	checkAssertions.run(args[0], restArgs);
+    }
   }
 
 }

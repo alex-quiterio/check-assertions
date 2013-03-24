@@ -43,6 +43,7 @@ public class DummyClass extends Base {
 
 	public static void main(String [] args) {
 		DummyClass dum = new DummyClass(4,5);
+		dum.foo = 1;
 		
 	}
 }

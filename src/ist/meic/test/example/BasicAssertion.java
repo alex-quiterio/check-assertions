@@ -4,7 +4,7 @@ import ist.meic.pa.annotations.Assertion;
 
 public class BasicAssertion {
 	@Assertion("foo>0")
-	public int foo=1;
+	public int foo;
 	
 	@Assertion("bar%2==0")
 	public long bar;
@@ -14,4 +14,5 @@ public class BasicAssertion {
 	
 	@Assertion("quux.length()>1")
 	public String quux;
+
 }

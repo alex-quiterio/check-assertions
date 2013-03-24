@@ -8,7 +8,7 @@ import javassist.Translator;
 
 public class AssertionTranslator implements Translator {
 
-	private Inspector [] inspectors;
+	public Inspector [] inspectors;
 	
 	/**
 	 * AssertionTranslator Constructor inject partial assertions 
@@ -35,7 +35,7 @@ public class AssertionTranslator implements Translator {
 	public void onLoad(ClassPool pool, String className) 
 			throws NotFoundException, CannotCompileException {
 		for(Inspector inspector : this.inspectors) {
-			inspector.inspect(pool.get(className));
+			inspector.inspect(pool, pool.get(className));
 		}
 	}
 }
