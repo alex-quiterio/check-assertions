@@ -8,6 +8,7 @@ public interface Inspector {
 	/**
 	 * inspect - Every class that implements Inspector
 	 * needs to define its strategy for class inspection
+	 * @param pool - the context of future execution of ctClass
 	 * @param ctClass - the target class of evaluation
 	 */
 	public abstract void inspect(ClassPool pool, CtClass ctClass);

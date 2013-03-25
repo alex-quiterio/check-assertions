@@ -14,6 +14,9 @@ public class FieldMapperTestCase extends TestCase {
 		String field1 = "var1";
 		String field2 = "var2";
 		
+		assertFalse("should return false because field1 isn't initialized", 
+				FieldMapper.fieldInitialized(o1, field1));
+		
 		FieldMapper.addField(o1, field1);
 		
 		// Verify that field2 isn't initialized
@@ -22,9 +25,6 @@ public class FieldMapperTestCase extends TestCase {
 	
 		assertTrue("should return true because field1 already was initialized", 
 				FieldMapper.fieldInitialized(o1, field1));
-		
-		assertFalse("should return false because field2 isn't initialized", 
-				FieldMapper.fieldInitialized(o1, field2));
 	}
 	
 	

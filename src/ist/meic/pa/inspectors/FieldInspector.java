@@ -5,7 +5,6 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtBehavior;
 import javassist.CtClass;
-import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
@@ -26,13 +25,13 @@ public class FieldInspector implements Inspector {
 					"throw new RuntimeException(\"%s\");" +
 				"}" +  
 			"}";
-	final String callWriteAssert =
+	final String writeRoutine =
 			"{" +
 				"$0.%s = $1;" +
 				"FieldMapper.addField((Object)$0, \"%s\");" +
 				"$0.assert_%s();" +
 			"}";
-	final String callReadAssert = 
+	final String readRoutine = 
 			"{" +
 				"if(FieldMapper.fieldInitialized((Object)$0, \"%s\")) {" +
 					"$_ = ($r) $0.%s;" +
@@ -46,7 +45,6 @@ public class FieldInspector implements Inspector {
 	
 	@Override
 	public void inspect(ClassPool pool, CtClass ctClass) {
-		//injectGuardMethods(ctClass);
 		for (CtBehavior ctBehavior : ctClass.getDeclaredBehaviors()) {
 			try {
 				ctBehavior.instrument(strategy(pool, ctClass));
@@ -68,13 +66,15 @@ public class FieldInspector implements Inspector {
 			public void edit(FieldAccess fa) {
 				String expression, error;
 				Assertion assertion;
+				CtClass klass;
 				String fieldName = fa.getFieldName();
 				try {
 					if(!fa.getField().hasAnnotation(Assertion.class)) {
 						return;
 					} else {
-						CtClass klass = pool.get(fa.getClassName());
+						klass = pool.get(fa.getClassName());
 						try {
+							// check if method already exists
 							klass.getDeclaredMethod("assert_" + fieldName);
 						} catch(NotFoundException e) {
 							assertion = (Assertion) fa.getField().getAnnotation(Assertion.class);
@@ -92,11 +92,11 @@ public class FieldInspector implements Inspector {
 						if (fa.isWriter()
 								&& fa.getField().hasAnnotation(Assertion.class)) {
 								fieldName = fa.getFieldName();
-								fa.replace(String.format(callWriteAssert, 
+								fa.replace(String.format(writeRoutine, 
 										fieldName, fieldName,fieldName, fieldName));
 						} else if (fa.isReader() 
 								&& fa.getField().hasAnnotation(Assertion.class)) {
-								fa.replace(String.format(callReadAssert, fieldName,
+								fa.replace(String.format(readRoutine, fieldName,
 										fieldName,
 										String.format(errorIMessage, fieldName)));
 						}
@@ -107,39 +107,10 @@ public class FieldInspector implements Inspector {
 					e.printStackTrace();
 					System.out.println(e.getMessage());
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
+					System.out.println(e.getMessage());
 				}
 			}
 			
 		};
 	}
-	
-	@SuppressWarnings("unused")
-	private void injectGuardMethods(CtClass ctClass) {
-		Assertion assertion;
-		String expression, fieldName, error;
-		for(CtField field : ctClass.getFields()) {
-			if (field.hasAnnotation(Assertion.class)) {
-				try {
-					assertion = (Assertion) field.getAnnotation(Assertion.class);
-					expression = assertion.value();
-					fieldName = field.getName();
-					error = String.format(errorMessage, expression);
-					CtMethod m = CtNewMethod.make(String.format(runtimeMethod, 
-							fieldName,
-							expression,
-							error), ctClass);
-					ctClass.addMethod(m);
-				} catch (ClassNotFoundException e) {
-					System.out.println("ERROR 1");
-				} catch (CannotCompileException e) {
-					System.out.println("ERROR 2");
-				}
-				
-			}
-		}
-	}
-
-	
-	
 }

@@ -14,5 +14,8 @@ public class BasicAssertion {
 	
 	@Assertion("quux.length()>1")
 	public String quux;
+	
+	@Assertion("true")
+	public int greatRelax;
 
 }

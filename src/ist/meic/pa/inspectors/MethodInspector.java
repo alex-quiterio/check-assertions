@@ -48,6 +48,13 @@ public class MethodInspector implements Inspector {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param c - the target class for inspection
+	 * @param m - method that we want to trace in class +c+ 
+	 * @return a string representing a chain of assertions with all 
+	 * the expression values detected in above classes
+	 */
 	private String getAssertionChain(CtMethod m, CtClass c) {
 		Assertion an;
 		String OPERAND = "&&";
@@ -66,8 +73,8 @@ public class MethodInspector implements Inspector {
 				currentClass = null;
 				continue;
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return "true";
+				System.err.println("[Method Inspector] Something wrong: " 
+						+ e.getMessage());
 			}
 		}
 		return assertionChain  + "true";

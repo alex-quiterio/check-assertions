@@ -6,6 +6,11 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
 
+/**
+ * Constructor Inspector implements Inspector Interface in order to arm assertions
+ * on the final step of constructor execution. If an assertion fails it returns a
+ * Runtime Exception explaining what was wrong with execution of the method
+ */
 public class ConstructorInspector implements Inspector {
 
 	final String constructorSnippet =
